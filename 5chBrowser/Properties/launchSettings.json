@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "5chBrowser (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "5chBrowser (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
