@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using _5chBrowser.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -26,10 +27,11 @@ namespace _5chBrowser.Views
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        public MainViewModel ViewModel { get; set; }
         public MainWindow()
         {
             this.InitializeComponent();
+            this.ViewModel = new MainViewModel();
         }
-
     }
 }
