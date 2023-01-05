@@ -75,11 +75,8 @@ namespace _5chBrowser.Services
                         lockList.Remove(lockList.First().Key);
                 }
 
-                T result;
                 lock (lockObj)
-                    result = func().Result;
-
-                return result;
+                    return func().Result;
             });
         }
 
