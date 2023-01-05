@@ -141,7 +141,7 @@ namespace _5chBrowser.Services
                 responseBody = await reader.ReadToEndAsync();
 
             await SaveDat(server, bbs, key, responseBody, !reload);
-            await SaveInfo(server, bbs, key, lastModified);
+            await SaveInfo(server, bbs, key, newLastModified);
         }
 
         // 指定されたスレッドのLastModifiedとRangeを取得
