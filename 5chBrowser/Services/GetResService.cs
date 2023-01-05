@@ -64,15 +64,25 @@ namespace _5chBrowser.Services
             {
                 object lockObj;
                 lock (lockList)
+                {
                     lockObj = lockList.FirstOrDefault(item => item.Key == id).Value ?? (lockList[id] = new());
+
+                    if (lockList.Count > 200)
+                    {
+                        lock (lockList)
+                            lockList.Remove(lockList.First().Key);
+                    }
+                }
 
                 T result;
                 lock (lockObj)
                     result = func().Result;
 
-                if (lockList.Count > 200)
-                    lock (lockList)
-                        lockList.Remove(lockList.First().Key);
+                lock (lockList)
+                {
+                    lockList.Remove(id);
+                    lockList.Add(id, lockObj);
+                }
 
                 return result;
             });
