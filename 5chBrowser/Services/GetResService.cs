@@ -1,4 +1,5 @@
 ﻿using _5chBrowser.Models;
+using _5chBrowser.Services;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using CommunityToolkit.WinUI.UI.Controls;
@@ -67,22 +68,16 @@ namespace _5chBrowser.Services
                 {
                     lockObj = lockList.FirstOrDefault(item => item.Key == id).Value ?? (lockList[id] = new());
 
+                    lockList.Remove(id);
+                    lockList.Add(id, lockObj);
+
                     if (lockList.Count > 200)
-                    {
-                        lock (lockList)
-                            lockList.Remove(lockList.First().Key);
-                    }
+                        lockList.Remove(lockList.First().Key);
                 }
 
                 T result;
                 lock (lockObj)
                     result = func().Result;
-
-                lock (lockList)
-                {
-                    lockList.Remove(id);
-                    lockList.Add(id, lockObj);
-                }
 
                 return result;
             });
