@@ -15,10 +15,11 @@ namespace _5chBrowser.Services
         private ObservableCollection<BoardList> TreeSource = new ObservableCollection<BoardList>();
         public async Task<ObservableCollection<BoardList>> GetBoard()
         {
-            var html = await Task.Run(() => GetHTML().Result);
-            return HTMLParse(html);
+            var json = await Task.Run(() => GetJson().Result);
+            BoardInfo boardInfo = JsonAnalize(json);
+            return HTMLParse(boardInfo);
         }
-        private async Task<BoardInfo> GetHTML()
+        private async Task<string> GetJson()
         {
             HttpClient client = new HttpClient();
             // Call asynchronous network methods in a try/catch block to handle exceptions.
@@ -27,19 +28,22 @@ namespace _5chBrowser.Services
                 using HttpResponseMessage response = await client.GetAsync("https://menu.5ch.net/bbsmenu.json");
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
-
-                var col=JsonSerializer.Deserialize<BoardInfo>(responseBody);
-                return col;
+                return responseBody;                
             }
-            catch
+            catch(Exception ex) 
             {
-                return null;
+                return ex.Message;
             }
         }
-        private ObservableCollection<BoardList> HTMLParse(BoardInfo html)
+        private BoardInfo JsonAnalize(string json)
+        {
+            var col = JsonSerializer.Deserialize<BoardInfo>(json);
+            return col;
+        }
+        private ObservableCollection<BoardList> HTMLParse(BoardInfo boardInfo)
         {
 
-            foreach (var m in html.menu_list)
+            foreach (var m in boardInfo.menu_list)
             {
 
                 var childrenList = new ObservableCollection<BoardList>();
