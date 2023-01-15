@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -31,7 +32,8 @@ namespace _5chBrowser.Services
             var httpClientHandler = new HttpClientHandler
             {
                 Proxy = new WebProxy("http://localhost:8080", false),
-                UseProxy = true
+                UseProxy = true,
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
             };
 
             client = new HttpClient(httpClientHandler)
@@ -115,13 +117,15 @@ namespace _5chBrowser.Services
             if (!reload)
                 (lastModified, range) = await GetInfo(server, bbs, key);
 
-            var req = new HttpRequestMessage(HttpMethod.Get, $"http://{server}/{bbs}/dat/{key}.dat");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"http://{server}/{bbs}/dat/{key}.dat");
             if (lastModified != "")
-                req.Headers.Add("if-modified-since", lastModified);
+                request.Headers.Add("if-modified-since", lastModified);
             if (range != null)
-                req.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(range, null);
+                request.Headers.Range = new RangeHeaderValue(range, null);
 
-            var response = await client.SendAsync(req);
+            request.Headers.TryAddWithoutValidation("Accept-Encoding", "gzip, deflate");
+
+            var response = await client.SendAsync(request);
 
             try
             {
