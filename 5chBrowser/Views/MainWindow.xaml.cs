@@ -33,5 +33,6 @@ namespace _5chBrowser.Views
             this.InitializeComponent();
             this.ViewModel = new MainViewModel();
         }
+
     }
 }

@@ -17,7 +17,7 @@ namespace _5chBrowser.Services
         {
             var json = await Task.Run(() => GetJson().Result);
             BoardInfo boardInfo = JsonAnalize(json);
-            return HTMLParse(boardInfo);
+            return ThreeSourcePase(boardInfo);
         }
         private async Task<string> GetJson()
         {
@@ -40,7 +40,7 @@ namespace _5chBrowser.Services
             var col = JsonSerializer.Deserialize<BoardInfo>(json);
             return col;
         }
-        private ObservableCollection<BoardList> HTMLParse(BoardInfo boardInfo)
+        private ObservableCollection<BoardList> ThreeSourcePase(BoardInfo boardInfo)
         {
 
             foreach (var m in boardInfo.menu_list)
