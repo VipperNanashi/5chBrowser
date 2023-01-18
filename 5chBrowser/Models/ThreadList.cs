@@ -9,8 +9,8 @@ namespace _5chBrowser.Models
     public class ThreadList
     {
         public string ThreadName { get; set; }
-        public int ThreadCount { get; set; }
+        public string ThreadCount { get; set; }
         public string Dat { get; set; }
-        public DateTime LastTime { get; set; }
+        public string LastTime { get; set; }
     }
 }

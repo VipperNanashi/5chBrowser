@@ -8,6 +8,8 @@
     xmlns:local="using:_5chBrowser.Views"
     xmlns:vm="using:_5chBrowser.ViewModels"
     xmlns:model="using:_5chBrowser.Models"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:icore="using:Microsoft.Xaml.Interactions.Core"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
@@ -208,12 +210,19 @@
                                     <ComboBox IsEditable="True" Width="150" />
                                 </StackPanel>
                                 <Grid Grid.Row="1">
-                                    <TreeView x:Name="boardTree"                                              
-                                              ItemsSource="{Binding BoardSource}">
+                                    <TreeView x:Name="boardTree"
+                                              ItemsSource="{Binding BoardSource}"
+                                              SelectionMode="Single">
+                                        <i:Interaction.Behaviors>
+                                            <icore:EventTriggerBehavior EventName="ItemInvoked" 
+                                                                        SourceObject="{Binding ElementName=boardTree}">
+                                                <icore:InvokeCommandAction Command="{Binding SelectBoardCommand}"/>
+                                            </icore:EventTriggerBehavior>
+                                        </i:Interaction.Behaviors>
                                         <TreeView.ItemTemplate>
                                             <DataTemplate x:DataType="model:BoardList">
-                                                <TreeViewItem ItemsSource="{x:Bind Children}"
-                                                          Content="{x:Bind BoardTitle}"/>
+                                                <TreeViewItem ItemsSource="{Binding Children}"
+                                                              Content="{Binding BoardTitle}"/>
                                             </DataTemplate>
                                         </TreeView.ItemTemplate>
 
@@ -279,11 +288,14 @@
                 <Grid Grid.Column="1" Margin="4" BorderBrush="LightGray" BorderThickness="2">
                     <TabView TabWidthMode="SizeToContent" IsAddTabButtonVisible="False" HorizontalAlignment="Stretch">
                         <TabViewItem Header="ニュー速VIP" IsClosable="False">
-                            <controls:DataGrid CanUserSortColumns="True">
+                            <controls:DataGrid CanUserSortColumns="True"
+                                               SelectedItem=""
+                                               ItemsSource="{Binding ThreadSource}">
                                 <controls:DataGrid.Columns>
                                     <controls:DataGridTextColumn Header="!"/>
                                     <controls:DataGridTextColumn Header="番号"/>
-                                    <controls:DataGridTextColumn Header="タイトル"/>
+                                    <controls:DataGridTextColumn Header="タイトル"
+                                                                 Binding="{Binding ThreadName}"/>
                                     <controls:DataGridTextColumn Header="レス"/>
                                     <controls:DataGridTextColumn Header="取得"/>
                                     <controls:DataGridTextColumn Header="新着"/>
