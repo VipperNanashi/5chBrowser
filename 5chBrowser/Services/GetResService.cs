@@ -26,7 +26,6 @@ namespace _5chBrowser.Services
         private HttpClient client;
 
         private static Regex resRegex = new Regex(@"^(.*?)<>(.*?)<>(.*?)<> (.*?) <>((.+) )?$");
-        private static Dictionary<string, object> lockList = new();
 
         public GetResService()
         {
@@ -57,30 +56,9 @@ namespace _5chBrowser.Services
         {
             // 同じスレを同時に取得しない
             var id = server + "_" + bbs + "_" + key;
-            var dat = await RunExclusive(() => GetDat(server, bbs, key, mode), id);
+            var dat = await ExclusiveRunner.Run(() => GetDat(server, bbs, key, mode), id);
             var (title, resList) = TitleAndResListFromDat(dat);
             return (title, new ObservableCollection<Res>(resList));
-        }
-
-        private async Task<T> RunExclusive<T>(Func<Task<T>> func, string id)
-        {
-            return await Task.Run(() =>
-            {
-                object lockObj;
-                lock (lockList)
-                {
-                    lockObj = lockList.FirstOrDefault(item => item.Key == id).Value ?? (lockList[id] = new());
-
-                    lockList.Remove(id);
-                    lockList.Add(id, lockObj);
-
-                    if (lockList.Count > 200)
-                        lockList.Remove(lockList.First().Key);
-                }
-
-                lock (lockObj)
-                    return func().Result;
-            });
         }
 
         private async Task<string> GetDat(string server, string bbs, string key, GetMode mode)
