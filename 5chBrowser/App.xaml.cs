@@ -19,6 +19,10 @@ using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using _5chBrowser.Views;
+using System.Text.Json;
+using System.Diagnostics;
+using System.Text;
+using _5chBrowser.Services;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -36,6 +40,7 @@ namespace _5chBrowser
         /// </summary>
         public App()
         {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             this.InitializeComponent();
         }
 
