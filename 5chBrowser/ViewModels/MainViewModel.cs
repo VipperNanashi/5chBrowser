@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
 using WinRT;
+using System.Text.RegularExpressions;
 
 namespace _5chBrowser.ViewModels
 {
@@ -18,7 +19,17 @@ namespace _5chBrowser.ViewModels
         [ObservableProperty]
         public ObservableCollection<BoardList> boardSource=new ObservableCollection<BoardList>();
         [ObservableProperty]
-        public ObservableCollection<ThreadList>threadSource=new ObservableCollection<ThreadList>();
+        public ObservableCollection<ThreadList> threadSource=new ObservableCollection<ThreadList>();
+        [ObservableProperty]
+        public ObservableCollection<Res> resSource=new ObservableCollection<Res>();
+
+        //GetRes用
+        [ObservableProperty]
+        public string selectServer;
+        [ObservableProperty]
+        public string selectBBS;
+        [ObservableProperty]
+        public string selectKey;
         
         public MainViewModel()
         {
@@ -37,8 +48,25 @@ namespace _5chBrowser.ViewModels
                 return; 
             }
             var threadURL=node.BoardURL;
+
+            //server,bbs取得
+            string delimited = @"/([.a-z1-9\\s]*)";
+            var match = Regex.Matches(threadURL, delimited);
+            SelectServer = match[1].Groups[1].Value;
+            SelectBBS = match[2].Groups[1].Value;
+
             GetThreadService getThreadService= new GetThreadService();
             ThreadSource = await getThreadService.GetThread(threadURL.ToString());
         }
+        [RelayCommand]
+        public async void SelectThread(SelectionChangedEventArgs args)
+        {
+            var selectItem = args.AddedItems.Cast<ThreadList>().FirstOrDefault();
+            SelectKey = selectItem.Dat;
+            GetResService getResService= new GetResService();
+            ResSource=await getResService.GetRes(SelectServer, SelectBBS, SelectKey);
+            //public async Task<ObservableCollection<Res>> GetRes(string server, string bbs, string key, GetMode mode = GetMode.LocalRemote)
+        }
+        
     }
 }

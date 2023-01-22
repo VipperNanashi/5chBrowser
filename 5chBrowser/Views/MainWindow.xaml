@@ -288,20 +288,34 @@
                 <Grid Grid.Column="1" Margin="4" BorderBrush="LightGray" BorderThickness="2">
                     <TabView TabWidthMode="SizeToContent" IsAddTabButtonVisible="False" HorizontalAlignment="Stretch">
                         <TabViewItem Header="ニュー速VIP" IsClosable="False">
-                            <controls:DataGrid CanUserSortColumns="True"
-                                               SelectedItem=""
-                                               ItemsSource="{Binding ThreadSource}">
+                            <controls:DataGrid x:Name="threadDataGrid"
+                                               CanUserSortColumns="True"
+                                               SelectionMode="Single"
+                                               ItemsSource="{Binding ThreadSource}"
+                                               IsReadOnly="True">
+                                <i:Interaction.Behaviors>
+                                    <icore:EventTriggerBehavior EventName="SelectionChanged" 
+                                                                SourceObject="{Binding ElementName=threadDataGrid}">
+                                        <icore:InvokeCommandAction Command="{Binding SelectThreadCommand}"/>
+                                    </icore:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
                                 <controls:DataGrid.Columns>
-                                    <controls:DataGridTextColumn Header="!"/>
-                                    <controls:DataGridTextColumn Header="番号"/>
+                                    <controls:DataGridTextColumn Header="!"
+                                                                 Width="30"/>
+                                    <controls:DataGridTextColumn Header="番号"
+                                                                 Width="30"/>
                                     <controls:DataGridTextColumn Header="タイトル"
-                                                                 Binding="{Binding ThreadName}"/>
-                                    <controls:DataGridTextColumn Header="レス"/>
+                                                                 Binding="{Binding ThreadName}"
+                                                                 Width="300"/>
+                                    <controls:DataGridTextColumn Header="レス"
+                                                                 Binding="{Binding ThreadCount}"
+                                                                 Width="50"/>
                                     <controls:DataGridTextColumn Header="取得"/>
                                     <controls:DataGridTextColumn Header="新着"/>
                                     <controls:DataGridTextColumn Header="増レス"/>
                                     <controls:DataGridTextColumn Header="勢い"/>
-                                    <controls:DataGridTextColumn Header="最終取得"/>
+                                    <controls:DataGridTextColumn Header="最終取得"
+                                                                 Binding="{Binding LastTime}"/>
                                     <controls:DataGridTextColumn Header="最終書き込み"/>
                                     <controls:DataGridTextColumn Header="Since"/>
                                     <controls:DataGridTextColumn Header="板"/>
@@ -315,12 +329,14 @@
                         <TranslateTransform X="-8"/>
                     </controls:GridSplitter.RenderTransform>
                 </controls:GridSplitter>
+                
+                <!--スレッド及び書き込みゾーン-->
                 <Grid Grid.Column="2" Margin="4" BorderBrush="LightGray" BorderThickness="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="2*"/>
-                        <RowDefinition />
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <TabView Grid.Row="0">
                         <TabViewItem Header="WinUIでJane作って見たったｗ" MaxWidth="200">
@@ -357,39 +373,69 @@
                             </CommandBar>
                         </Grid>
                     </StackPanel>
-                    <ListView HorizontalAlignment="Stretch" Grid.Row="2"/>
-                    <controls:Expander VerticalAlignment="Bottom" HorizontalAlignment="Stretch" IsEnabled="True" ExpandDirection="Up" Grid.Row="3">
-                        <Grid Width="{Binding ElementName=memo,Path=Width}" HorizontalAlignment="Left">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" >
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <!--<TextBlock Grid.Column="0" Text="名前" VerticalAlignment="Center"/>-->
-                                <!--<ComboBox Grid.Column="1" IsEditable="True" MinWidth="200"/>-->
-                                <TextBlock Grid.Column="2" Text="メール" VerticalAlignment="Center"/>
-                                <ComboBox Grid.Column="3" IsEditable="True" MinWidth="200"/>
-                                <CheckBox Grid.Column="4" Content="sage"/>
-                                <TextBox x:Name="ele" Width="100">
-                                    <ToolTipService.ToolTip>
-                                        <ToolTip x:Name="tip" FontSize="20"/>
-                                    </ToolTipService.ToolTip>
-                                </TextBox>
-                                <Button Grid.Column="5" Content="書き込み" HorizontalAlignment="Right"/>
+                    <!--スレッドビュー-->
+                    <ListView Grid.Row="2"
+                              HorizontalAlignment="Stretch"
+                              ItemsSource="{Binding ResSource}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal" Padding="8,0">
+                                        <Button Content="{Binding No}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Date}" VerticalAlignment="Center"/>
+                                        <Button Content="{Binding ID}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Options}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <RichTextBlock Grid.Row="1">
+                                        <Paragraph Foreground="Black">
+                                            <Run FontSize="21"
+                                                 Text="{Binding Message}"/>
+                                        </Paragraph>
+                                    </RichTextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>                        
+                    </ListView>
+                    <Expander Grid.Row="3"
+                              IsExpanded="True"
+                              ExpandDirection="Up"
+                              VerticalAlignment="Bottom"
+                              HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch"
+                              Header="書き込み">
+                        <Expander.Content>
+                            <Grid Height="200" HorizontalAlignment="Stretch">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0" HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition MaxWidth="50"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition MaxWidth="50"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition MaxWidth="100"/>
+                                        <ColumnDefinition MaxWidth="100"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="名前" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Column="1" IsEditable="True" HorizontalContentAlignment="Stretch"/>
+                                    <TextBlock Grid.Column="2" Text="メール" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Column="3" IsEditable="True" MinWidth="200"/>
+                                    <CheckBox Grid.Column="4" Content="sage"/>                  
+                                    <Button Grid.Column="5" Content="書き込み" HorizontalAlignment="Right"/>
+                                </Grid>
+                                <Grid Grid.Row="1" HorizontalAlignment="Stretch">
+                                    <RichEditBox/>
+                                </Grid>
                             </Grid>
-                            <Grid Grid.Row="1">
-                                <RichEditBox MinWidth="1000" MinHeight="500"/>
-                            </Grid>
-                        </Grid>
-                    </controls:Expander>
+                        </Expander.Content>
+                    </Expander>
                 </Grid>
             </Grid>
         </Grid>
