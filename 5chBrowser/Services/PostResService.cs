@@ -23,7 +23,7 @@ namespace _5chBrowser.Services
         {
             var httpClientHandler = new HttpClientHandler
             {
-                Proxy = new WebProxy("http://localhost:8080", false),
+                Proxy = new WebProxy(Properties.Settings.Default.WriteProxy, false),
                 UseProxy = true,
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
             };

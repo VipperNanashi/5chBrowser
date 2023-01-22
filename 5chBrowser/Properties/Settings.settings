@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="_5chBrowser.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="BbsMenu" Provider="PortableJsonSettingsProvider" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://menu.5ch.net/bbsmenu.html</Value>
+    </Setting>
+    <Setting Name="ReadProxy" Provider="PortableJsonSettingsProvider" Type="System.String" Scope="User">
+      <Value Profile="(Default)">localhost:8080</Value>
+    </Setting>
+    <Setting Name="WriteProxy" Provider="PortableJsonSettingsProvider" Type="System.String" Scope="User">
+      <Value Profile="(Default)">localhost:8080</Value>
+    </Setting>
+    <Setting Name="LogFolder" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

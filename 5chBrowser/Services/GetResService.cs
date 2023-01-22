@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -25,13 +26,12 @@ namespace _5chBrowser.Services
         private HttpClient client;
 
         private static Regex resRegex = new Regex(@"^(.*?)<>(.*?)<>(.*?)<> (.*?) <>((.+) )?$");
-        private static Dictionary<string, object> lockList = new();
 
         public GetResService()
         {
             var httpClientHandler = new HttpClientHandler
             {
-                Proxy = new WebProxy("http://localhost:8080", false),
+                Proxy = new WebProxy(Properties.Settings.Default.ReadProxy, false),
                 UseProxy = true,
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
             };
@@ -56,30 +56,9 @@ namespace _5chBrowser.Services
         {
             // 同じスレを同時に取得しない
             var id = server + "_" + bbs + "_" + key;
-            var dat = await RunExclusive(() => GetDat(server, bbs, key, mode), id);
+            var dat = await ExclusiveRunner.Run(() => GetDat(server, bbs, key, mode), id);
             var (title, resList) = TitleAndResListFromDat(dat);
             return (title, new ObservableCollection<Res>(resList));
-        }
-
-        private async Task<T> RunExclusive<T>(Func<Task<T>> func, string id)
-        {
-            return await Task.Run(() =>
-            {
-                object lockObj;
-                lock (lockList)
-                {
-                    lockObj = lockList.FirstOrDefault(item => item.Key == id).Value ?? (lockList[id] = new());
-
-                    lockList.Remove(id);
-                    lockList.Add(id, lockObj);
-
-                    if (lockList.Count > 200)
-                        lockList.Remove(lockList.First().Key);
-                }
-
-                lock (lockObj)
-                    return func().Result;
-            });
         }
 
         private async Task<string> GetDat(string server, string bbs, string key, GetMode mode)
@@ -101,12 +80,28 @@ namespace _5chBrowser.Services
             return await LoadDat(server, bbs, key);
         }
 
-        // server,bbsからフォルダーを特定して返却
+        // server,bbsからフォルダーを特定して返却（なければ作成）
         private async Task<string> GetFolder(string server, string bbs)
         {
+            var logFolderPath = Properties.Settings.Default.LogFolder;
+            if (logFolderPath == "")
+            {
+                var assembly = Assembly.GetEntryAssembly();
+                logFolderPath = Path.GetDirectoryName(assembly.Location);
+            }
+
             // 未実装
-            // return @$"{logFolder}\Logs\{site}\{category}\{boardName}"
-            return @"C:\log\Logs\2ch\ＰＣ等\ソフトウェア";
+            var rootFolder = "Log";
+            var siteName = "2ch";
+            var categoryName = "ＰＣ等";
+            var boardName = "ソフトウェア";
+
+            var datFolderPath = Path.Combine(logFolderPath, rootFolder, siteName, categoryName, boardName);
+
+            if (!Directory.Exists(datFolderPath))
+                Directory.CreateDirectory(datFolderPath);
+
+            return datFolderPath;
         }
 
         private async Task DownloadDat(string server, string bbs, string key, bool reload)
@@ -154,7 +149,7 @@ namespace _5chBrowser.Services
             var folder = await GetFolder(server, bbs);
 
             string lastModified;
-            var idxPath = folder + "\\" + key + ".idx";
+            var idxPath = Path.Combine(folder, key + ".idx");
             if (File.Exists(idxPath))
             {
                 var text = await File.ReadAllLinesAsync(idxPath);
@@ -166,7 +161,7 @@ namespace _5chBrowser.Services
             }
 
             long? range;
-            var datPath = folder + "\\" + key + ".dat";
+            var datPath = Path.Combine(folder, key + ".dat");
             if (File.Exists(datPath))
             {
                 // ファイルのサイズを取得
@@ -185,7 +180,7 @@ namespace _5chBrowser.Services
 
         private async Task SaveDat(string server, string bbs, string key, string dat, bool append)
         {
-            var path = await GetFolder(server, bbs) + "\\" + key + ".dat";
+            var path = Path.Combine(await GetFolder(server, bbs), key + ".dat");
             var enc = Encoding.GetEncoding("Shift_JIS");
 
             if (append)
@@ -196,7 +191,7 @@ namespace _5chBrowser.Services
 
         private async Task SaveInfo(string server, string bbs, string key, string lastModified)
         {
-            var path = await GetFolder(server, bbs) + "\\" + key + ".idx";
+            var path = Path.Combine(await GetFolder(server, bbs), key + ".idx");
             string[] lines;
             if (File.Exists(path))
                 lines = await File.ReadAllLinesAsync(path);
@@ -208,7 +203,7 @@ namespace _5chBrowser.Services
 
         private async Task<string> LoadDat(string server, string bbs, string key)
         {
-            var path = await GetFolder(server, bbs) + "\\" + key + ".dat";
+            var path = Path.Combine(await GetFolder(server, bbs), key + ".dat");
             var enc = Encoding.GetEncoding("Shift_JIS");
             return await File.ReadAllTextAsync(path, enc);
         }

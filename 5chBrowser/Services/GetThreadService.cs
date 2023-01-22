@@ -35,7 +35,6 @@ namespace _5chBrowser.Services
             {
                 return ex.Message;
             }
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             string responseBody = "";
             using (var stream = (await response.Content.ReadAsStreamAsync()))
