@@ -54,7 +54,6 @@ namespace _5chBrowser.ViewModels
             var match = Regex.Matches(threadURL, delimited);
             SelectServer = match[1].Groups[1].Value;
             SelectBBS = match[2].Groups[1].Value;
-
             GetThreadService getThreadService= new GetThreadService();
             ThreadSource = await getThreadService.GetThread(threadURL.ToString());
         }
@@ -62,6 +61,8 @@ namespace _5chBrowser.ViewModels
         public async void SelectThread(SelectionChangedEventArgs args)
         {
             var selectItem = args.AddedItems.Cast<ThreadList>().FirstOrDefault();
+            if(selectItem == null)
+            { return; }
             SelectKey = selectItem.Dat;
             GetResService getResService= new GetResService();
             ResSource=await getResService.GetRes(SelectServer, SelectBBS, SelectKey);
