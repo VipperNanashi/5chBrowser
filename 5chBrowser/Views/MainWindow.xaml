@@ -209,6 +209,8 @@
                                     </ToggleSplitButton>
                                     <ComboBox IsEditable="True" Width="150" />
                                 </StackPanel>
+                                
+                                <!--スレッドツリー-->
                                 <Grid Grid.Row="1">
                                     <TreeView x:Name="boardTree"
                                               ItemsSource="{Binding BoardSource}"
@@ -417,14 +419,14 @@
                                 <Grid Grid.Row="0" HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition MaxWidth="50"/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition MaxWidth="50"/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition MaxWidth="100"/>
                                         <ColumnDefinition MaxWidth="100"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="名前" VerticalAlignment="Center"/>
-                                    <ComboBox Grid.Column="1" IsEditable="True" HorizontalContentAlignment="Stretch"/>
+                                    <ComboBox Grid.Column="1" IsEditable="True" MinWidth="200"/>
                                     <TextBlock Grid.Column="2" Text="メール" VerticalAlignment="Center"/>
                                     <ComboBox Grid.Column="3" IsEditable="True" MinWidth="200"/>
                                     <CheckBox Grid.Column="4" Content="sage"/>                  
