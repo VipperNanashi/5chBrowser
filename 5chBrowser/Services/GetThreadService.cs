@@ -52,7 +52,7 @@ namespace _5chBrowser.Services
                 {
                     ThreadSource.Add(new ThreadList()
                     {
-                        Dat = thread[0],
+                        Dat = thread[0].Replace(".dat",""),
                         ThreadName = thread[1],
                         ThreadCount = thread[2],
                         LastTime = thread[6],
