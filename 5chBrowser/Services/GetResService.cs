@@ -6,11 +6,13 @@ using CommunityToolkit.WinUI.UI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -29,16 +31,46 @@ namespace _5chBrowser.Services
 
         public GetResService()
         {
-            var httpClientHandler = new HttpClientHandler
+            var socketHandler = new SocketsHttpHandler()
             {
                 Proxy = new WebProxy(Properties.Settings.Default.ReadProxy, false),
                 UseProxy = true,
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli,
+                ConnectCallback = async (context, cancellationToken) =>
+                {
+                    // IPv6を使用しないようにする処理
+
+                    // GetHostEntryAsyncでホスト名を解決する
+                    // これに127.0.0.1を通すと192.168.10.10のように変換さえるが2chAPIProxyなどで接続拒否される
+                    // ユーザーが意図しない変換は避けるためにIPアドレスの場合はそのまま使用
+                    IPAddress address;
+                    if (!IPAddress.TryParse(context.DnsEndPoint.Host, out address))
+                    {
+                        var entry = await Dns.GetHostEntryAsync(context.DnsEndPoint.Host, AddressFamily.InterNetwork, cancellationToken);
+                        address = entry.AddressList.FirstOrDefault();
+                    }
+
+                    var socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
+                    {
+                        NoDelay = true
+                    };
+
+                    try
+                    {
+                        await socket.ConnectAsync(address, context.DnsEndPoint.Port, cancellationToken);
+                        return new NetworkStream(socket, ownsSocket: true);
+                    }
+                    catch
+                    {
+                        socket.Dispose();
+                        throw;
+                    }
+                }
             };
 
-            client = new HttpClient(httpClientHandler)
+            client = new HttpClient(socketHandler)
             {
-                Timeout = TimeSpan.FromSeconds(10)
+                Timeout = TimeSpan.FromSeconds(10),
             };
         }
 
