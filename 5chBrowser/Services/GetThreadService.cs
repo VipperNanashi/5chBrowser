@@ -14,17 +14,17 @@ namespace _5chBrowser.Services
     public class GetThreadService
     {
         private ObservableCollection<ThreadList> ThreadSource = new ObservableCollection<ThreadList>();
-        public async Task<ObservableCollection<ThreadList>> GetThread(string url)
+        public async Task<ObservableCollection<ThreadList>> GetThread(BoardList board)
         {
-            string txt = await Task.Run(() => GetText(url).Result);
+            string txt = await Task.Run(() => GetText(board).Result);
 
-            return ThreadSourcePase(txt);
+            return ThreadSourcePase(board, txt);
         }
-        private async Task<string> GetText(string url)
+        private async Task<string> GetText(BoardList board)
         {
             HttpClient client = new HttpClient();
             // Call asynchronous network methods in a try/catch block to handle exceptions.
-            string text = url + "lastmodify.txt";
+            string text = board.BoardURL + "lastmodify.txt";
 
             using HttpResponseMessage response = await client.GetAsync(text);
             try
@@ -42,17 +42,18 @@ namespace _5chBrowser.Services
                 responseBody = await reader.ReadToEndAsync();
             return responseBody;
         }
-        private ObservableCollection<ThreadList> ThreadSourcePase(string txt)
+        private ObservableCollection<ThreadList> ThreadSourcePase(BoardList board, string txt)
         {
             string[] threadlist = txt.Split("\n");
             foreach (var list in threadlist)
             {
-                string[] thread=list.Split("<>");
+                string[] thread = list.Split("<>");
                 if (thread.Length > 1)
                 {
                     ThreadSource.Add(new ThreadList()
                     {
-                        Dat = thread[0].Replace(".dat",""),
+                        Board = board,
+                        Dat = thread[0].Replace(".dat", ""),
                         ThreadName = thread[1],
                         ThreadCount = thread[2],
                         LastTime = thread[6],

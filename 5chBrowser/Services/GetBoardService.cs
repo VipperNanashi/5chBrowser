@@ -28,9 +28,9 @@ namespace _5chBrowser.Services
                 using HttpResponseMessage response = await client.GetAsync("https://menu.5ch.net/bbsmenu.json");
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
-                return responseBody;                
+                return responseBody;
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 return ex.Message;
             }
@@ -42,27 +42,30 @@ namespace _5chBrowser.Services
         }
         private ObservableCollection<BoardList> ThreeSourcePase(BoardInfo boardInfo)
         {
-
             foreach (var m in boardInfo.menu_list)
             {
+                var category = new BoardList()
+                {
+                    Category = null,
+                    BoardTitle = m.category_name,
+                    Children = new ObservableCollection<BoardList>()
+                };
 
-                var childrenList = new ObservableCollection<BoardList>();
                 foreach (var c in m.category_content)
                 {
-                    childrenList.Add(new BoardList()
+                    category.Children.Add(new BoardList()
                     {
+                        SiteName = "2ch",
+                        Category = category,
                         BoardTitle = c.board_name,
                         BoardURL = c.url
                     });
                 }
-                TreeSource.Add(new BoardList()
-                {
-                    BoardTitle = m.category_name,
-                    Children = childrenList
-                });
+
+                TreeSource.Add(category);
             }
             return TreeSource;
         }
-        
+
     }
 }

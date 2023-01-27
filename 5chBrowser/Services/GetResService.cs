@@ -77,43 +77,43 @@ namespace _5chBrowser.Services
         // mode:LocalRemote 差分のみ取得してローカルのDATに足し合わせたものを返却(デフォルト)
         // mode:Local       ローカルのDATを返却
         // mode:Remote      全体を再取得して返却
-        public async Task<ObservableCollection<Res>> GetRes(string server, string bbs, string key, GetMode mode = GetMode.LocalRemote)
+        public async Task<ObservableCollection<Res>> GetRes(ThreadList thread, GetMode mode = GetMode.LocalRemote)
         {
-            var (_, resList) = await GetTitleAndRes(server, bbs, key, mode);
+            var (_, resList) = await GetTitleAndRes(thread, mode);
             return resList;
         }
 
         // DATからスレタイとレス一覧を取得
-        public async Task<(string, ObservableCollection<Res>)> GetTitleAndRes(string server, string bbs, string key, GetMode mode = GetMode.LocalRemote)
+        public async Task<(string, ObservableCollection<Res>)> GetTitleAndRes(ThreadList thread, GetMode mode = GetMode.LocalRemote)
         {
             // 同じスレを同時に取得しない
-            var id = server + "_" + bbs + "_" + key;
-            var dat = await ExclusiveRunner.Run(() => GetDat(server, bbs, key, mode), id);
+            var id = thread.Board.BoardURL + "_" + thread.Dat;
+            var dat = await ExclusiveRunner.Run(() => GetDat(thread, mode), id);
             var (title, resList) = TitleAndResListFromDat(dat);
             return (title, new ObservableCollection<Res>(resList));
         }
 
-        private async Task<string> GetDat(string server, string bbs, string key, GetMode mode)
+        private async Task<string> GetDat(ThreadList thread, GetMode mode)
         {
             switch (mode)
             {
                 case GetMode.LocalRemote:
-                    await DownloadDat(server, bbs, key, false);
+                    await DownloadDat(thread, false);
                     break;
                 case GetMode.Local:
                     break;
                 case GetMode.Remote:
-                    await DownloadDat(server, bbs, key, true);
+                    await DownloadDat(thread, true);
                     break;
                 default:
                     throw new NotImplementedException("指定された取得モードは非対応です。");
             }
 
-            return await LoadDat(server, bbs, key);
+            return await LoadDat(thread);
         }
 
         // server,bbsからフォルダーを特定して返却（なければ作成）
-        private async Task<string> GetFolder(string server, string bbs)
+        private async Task<string> GetFolder(BoardList board)
         {
             var logFolderPath = Properties.Settings.Default.LogFolder;
             if (logFolderPath == "")
@@ -136,15 +136,16 @@ namespace _5chBrowser.Services
             return datFolderPath;
         }
 
-        private async Task DownloadDat(string server, string bbs, string key, bool reload)
+        private async Task DownloadDat(ThreadList thread, bool reload)
         {
             string lastModified = "";
             long? range = null;
 
             if (!reload)
-                (lastModified, range) = await GetInfo(server, bbs, key);
+                (lastModified, range) = await GetInfo(thread);
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"http://{server}/{bbs}/dat/{key}.dat");
+            var datUrl = Regex.Replace(thread.Board.BoardURL, @"^https://", "http://") + "dat/" + thread.Dat + ".dat";
+            var request = new HttpRequestMessage(HttpMethod.Get, datUrl);
             if (lastModified != "")
                 request.Headers.Add("if-modified-since", lastModified);
             if (range != null)
@@ -171,17 +172,17 @@ namespace _5chBrowser.Services
             using (var reader = new StreamReader(stream, Encoding.GetEncoding("Shift_JIS")))
                 responseBody = await reader.ReadToEndAsync();
 
-            await SaveDat(server, bbs, key, responseBody, !reload);
-            await SaveInfo(server, bbs, key, newLastModified);
+            await SaveDat(thread, responseBody, !reload);
+            await SaveInfo(thread, newLastModified);
         }
 
         // 指定されたスレッドのLastModifiedとRangeを取得
-        private async Task<(string, long?)> GetInfo(string server, string bbs, string key)
+        private async Task<(string, long?)> GetInfo(ThreadList thread)
         {
-            var folder = await GetFolder(server, bbs);
+            var folder = await GetFolder(thread.Board);
 
             string lastModified;
-            var idxPath = Path.Combine(folder, key + ".idx");
+            var idxPath = Path.Combine(folder, thread.Dat + ".idx");
             if (File.Exists(idxPath))
             {
                 var text = await File.ReadAllLinesAsync(idxPath);
@@ -193,7 +194,7 @@ namespace _5chBrowser.Services
             }
 
             long? range;
-            var datPath = Path.Combine(folder, key + ".dat");
+            var datPath = Path.Combine(folder, thread.Dat + ".dat");
             if (File.Exists(datPath))
             {
                 // ファイルのサイズを取得
@@ -210,9 +211,9 @@ namespace _5chBrowser.Services
             return (lastModified, range);
         }
 
-        private async Task SaveDat(string server, string bbs, string key, string dat, bool append)
+        private async Task SaveDat(ThreadList thread, string dat, bool append)
         {
-            var path = Path.Combine(await GetFolder(server, bbs), key + ".dat");
+            var path = Path.Combine(await GetFolder(thread.Board), thread.Dat + ".dat");
             var enc = Encoding.GetEncoding("Shift_JIS");
 
             if (append)
@@ -221,9 +222,9 @@ namespace _5chBrowser.Services
                 await File.WriteAllTextAsync(path, dat, enc);
         }
 
-        private async Task SaveInfo(string server, string bbs, string key, string lastModified)
+        private async Task SaveInfo(ThreadList thread, string lastModified)
         {
-            var path = Path.Combine(await GetFolder(server, bbs), key + ".idx");
+            var path = Path.Combine(await GetFolder(thread.Board), thread.Dat + ".idx");
             string[] lines;
             if (File.Exists(path))
                 lines = await File.ReadAllLinesAsync(path);
@@ -233,9 +234,9 @@ namespace _5chBrowser.Services
             await File.WriteAllLinesAsync(path, lines);
         }
 
-        private async Task<string> LoadDat(string server, string bbs, string key)
+        private async Task<string> LoadDat(ThreadList thread)
         {
-            var path = Path.Combine(await GetFolder(server, bbs), key + ".dat");
+            var path = Path.Combine(await GetFolder(thread.Board), thread.Dat + ".dat");
             var enc = Encoding.GetEncoding("Shift_JIS");
             return await File.ReadAllTextAsync(path, enc);
         }
