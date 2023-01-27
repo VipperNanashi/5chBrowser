@@ -113,7 +113,7 @@ namespace _5chBrowser.Services
         }
 
         // server,bbsからフォルダーを特定して返却（なければ作成）
-        private async Task<string> GetFolder(BoardList board)
+        private string GetFolder(BoardList board)
         {
             var logFolderPath = Properties.Settings.Default.LogFolder;
             if (logFolderPath == "")
@@ -122,11 +122,10 @@ namespace _5chBrowser.Services
                 logFolderPath = Path.GetDirectoryName(assembly.Location);
             }
 
-            // 未実装
             var rootFolder = "Log";
-            var siteName = "2ch";
-            var categoryName = "ＰＣ等";
-            var boardName = "ソフトウェア";
+            var siteName = board.SiteName;
+            var categoryName = board.Category.BoardTitle;
+            var boardName = board.BoardTitle;
 
             var datFolderPath = Path.Combine(logFolderPath, rootFolder, siteName, categoryName, boardName);
 
@@ -179,7 +178,7 @@ namespace _5chBrowser.Services
         // 指定されたスレッドのLastModifiedとRangeを取得
         private async Task<(string, long?)> GetInfo(ThreadList thread)
         {
-            var folder = await GetFolder(thread.Board);
+            var folder = GetFolder(thread.Board);
 
             string lastModified;
             var idxPath = Path.Combine(folder, thread.Dat + ".idx");
@@ -213,7 +212,7 @@ namespace _5chBrowser.Services
 
         private async Task SaveDat(ThreadList thread, string dat, bool append)
         {
-            var path = Path.Combine(await GetFolder(thread.Board), thread.Dat + ".dat");
+            var path = Path.Combine(GetFolder(thread.Board), thread.Dat + ".dat");
             var enc = Encoding.GetEncoding("Shift_JIS");
 
             if (append)
@@ -224,7 +223,7 @@ namespace _5chBrowser.Services
 
         private async Task SaveInfo(ThreadList thread, string lastModified)
         {
-            var path = Path.Combine(await GetFolder(thread.Board), thread.Dat + ".idx");
+            var path = Path.Combine(GetFolder(thread.Board), thread.Dat + ".idx");
             string[] lines;
             if (File.Exists(path))
                 lines = await File.ReadAllLinesAsync(path);
@@ -236,7 +235,7 @@ namespace _5chBrowser.Services
 
         private async Task<string> LoadDat(ThreadList thread)
         {
-            var path = Path.Combine(await GetFolder(thread.Board), thread.Dat + ".dat");
+            var path = Path.Combine(GetFolder(thread.Board), thread.Dat + ".dat");
             var enc = Encoding.GetEncoding("Shift_JIS");
             return await File.ReadAllTextAsync(path, enc);
         }
