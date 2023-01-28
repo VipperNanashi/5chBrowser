@@ -10,6 +10,8 @@ namespace _5chBrowser.Models
 {
     public class BoardList
     {
+        public string SiteName { get; set; }
+        public BoardList Category { get; set; }
         public string BoardTitle { get; set; }
         public string BoardURL { get; set; }
         public ObservableCollection<BoardList> Children { get; set; } = new ObservableCollection<BoardList>();
