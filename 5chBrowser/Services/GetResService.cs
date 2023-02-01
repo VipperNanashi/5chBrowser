@@ -27,7 +27,7 @@ namespace _5chBrowser.Services
 
         private HttpClient client;
 
-        private static Regex resRegex = new Regex(@"^(.*?)<>(.*?)<>(.*?)<> (.*?) <>((.+) )?$");
+        private static Regex resRegex = new Regex(@"^(.*?)<>(.*?)<>(.*?)<> (.*?) <>(.+)?$");
 
         public GetResService()
         {
@@ -257,8 +257,8 @@ namespace _5chBrowser.Services
                 var options = match.Groups[3].Value;
                 var message = match.Groups[4].Value;
 
-                if (match.Groups[6].Value != "")
-                    title = match.Groups[6].Value;
+                if (match.Groups[5].Value != "")
+                    title = match.Groups[5].Value.Trim();
 
                 resList.Add(new Res(no, name, mail, options, message));
             }
