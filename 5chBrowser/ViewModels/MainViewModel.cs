@@ -23,42 +23,51 @@ namespace _5chBrowser.ViewModels
         [ObservableProperty]
         public ObservableCollection<Res> resSource = new ObservableCollection<Res>();
 
-        //GetRes用
-        /*[ObservableProperty]
-        public string selectServer;
-        [ObservableProperty]
-        public string selectBBS;
-        [ObservableProperty]
-        public string selectKey;*/
-
         public MainViewModel()
         {
-            GetBoardList();
+            //暫定
+            Task.Run(async () =>
+            {
+                await Load();
+                if (BoardSource.Count == 0)
+                    GetBoardList();
+            });
+        }
+        private async Task Load()
+        {
+            var service = new SaveStateService();
+            var state = await service.Load();
+            BoardSource = state.BoardList;
+            ThreadSource = state.ThreadList;
+            ResSource = state.ResList;
+        }
+        private async Task Save()
+        {
+            var service = new SaveStateService();
+            var state = new State();
+            state.BoardList = BoardSource;
+            state.ThreadList = ThreadSource;
+            state.ResList = ResSource;
+            await service.Save(state);
         }
         private async void GetBoardList()
         {
             GetBoardService getBoardService = new GetBoardService();
             BoardSource = await getBoardService.GetBoard();
+
+            await Save(); //暫定
         }
         [RelayCommand]
         public async void SelectBoard(TreeViewItemInvokedEventArgs args)
         {
             var node = args.InvokedItem as BoardList;
             if (node == null)
-                return;
-            /*if (node.BoardURL == null)
-            {
-                return;
-            }
-            var threadURL = node.BoardURL;
+            { return; }
 
-            //server,bbs取得
-            string delimited = @"/([.a-z1-9\\s]*)";
-            var match = Regex.Matches(threadURL, delimited);
-            SelectServer = match[1].Groups[1].Value;
-            SelectBBS = match[2].Groups[1].Value;*/
             GetThreadService getThreadService = new GetThreadService();
             ThreadSource = await getThreadService.GetThread(node);
+
+            await Save(); //暫定
         }
         [RelayCommand]
         public async void SelectThread(SelectionChangedEventArgs args)
@@ -66,10 +75,11 @@ namespace _5chBrowser.ViewModels
             var selectItem = args.AddedItems.Cast<ThreadList>().FirstOrDefault();
             if (selectItem == null)
             { return; }
-            //SelectKey = selectItem.Dat;
+
             GetResService getResService = new GetResService();
             ResSource = await getResService.GetRes(selectItem);
-            //public async Task<ObservableCollection<Res>> GetRes(string server, string bbs, string key, GetMode mode = GetMode.LocalRemote)
+
+            await Save(); //暫定
         }
 
     }
