@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,16 +13,34 @@ namespace _5chBrowser.Models
 {
     public class Res
     {
-        public int No { get; }
-        public string Name { get; }
-        public string Mail { get; }
-        public string Message { get; }
-        public string Options { get; }
-        public DateTime? Date { get; }
-        public string ID { get; }
+        public int No { get; set; }
+        public string Name { get; set; }
+        public string Mail { get; set; }
+        public string Message { get; set; }
+        private string _options;
+        public string Options
+        {
+            get => _options;
+            set
+            {
+                if (_options == value)
+                    return;
+                Date = GetDate(value);
+                ID = idRegex.Match(value).Groups[1].Value;
+                _options = value;
+            }
+        }
+        //[JsonIgnore]
+        public DateTime? Date { get;private set; }
+        //[JsonIgnore]
+        public string ID { get;private set; }
 
         private static Regex idRegex = new Regex(@"ID:([^<\s]+)");
         private static Regex dateRegex = new Regex(@"\d+/\d+/\d+\(.+?\)?(\s+\d+:\d+:\d+(\.\d+)?)?");
+
+        [JsonConstructor]
+        public Res()
+        { }
 
         public Res(int no, string name, string mail, string options, string message)
         {
@@ -29,8 +48,6 @@ namespace _5chBrowser.Models
             Name = name;
             Mail = mail;
             Options = options;
-            Date = GetDate(options);
-            ID = idRegex.Match(options).Groups[1].Value;
             Message = message;
         }
 
