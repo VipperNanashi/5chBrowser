@@ -18,12 +18,8 @@
         <Page.DataContext>
             <vm:MainViewModel/>
         </Page.DataContext>
-
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+        
+        <Grid RowDefinitions="Auto,*" Margin="2">
             <StackPanel Grid.Row="0">
                 <MenuBar>
                     <MenuBarItem Title="ファイル">
@@ -168,7 +164,7 @@
                         <AppBarButton Icon="Help" Label="ヘルプ"/>
                     </CommandBar>
                     <StackPanel Orientation="Horizontal">
-                        <TextBox Text="https://mi.5ch.net/news4vip/" Height="25"/>
+                        <TextBox Text="https://mi.5ch.net/news4vip/" Height="25" Width="250" Margin="10,0,0,0"/>
                         <Button Content="→"/>
                     </StackPanel>
                 </StackPanel>
@@ -180,9 +176,11 @@
                     <ColumnDefinition Width="500"/>
                     <ColumnDefinition x:Name="memo"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Margin="4" BorderBrush="LightGray" BorderThickness="2">
+                <StackPanel Grid.Column="0" Margin="2" BorderBrush="LightGray" BorderThickness="1">
                     <Grid>
-                        <TextBlock Text="板一覧"/>
+                        <Border Margin="8,5">
+                            <TextBlock Text="板一覧"/>
+                        </Border>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Content="▼" HorizontalAlignment="Right" FontSize="10"/>
                             <Button Content="📌" HorizontalAlignment="Right" FontSize="10"/>
@@ -191,7 +189,8 @@
                     </Grid>
                     <TabView TabWidthMode="SizeToContent" IsAddTabButtonVisible="False">
                         <TabViewItem Header="板一覧" IsClosable="False">
-                            <Grid RowDefinitions ="30, 800"><!--2grid目高さをGridに合わせて指定できるように-->
+                            <Grid RowDefinitions ="30, Auto">
+                                <!--2grid目高さをGridに合わせて指定できるように-->
                                 <StackPanel Orientation="Horizontal">
                                     <ToggleSplitButton>
                                         <SymbolIcon Symbol="Zoom"/>
@@ -209,7 +208,7 @@
                                     </ToggleSplitButton>
                                     <ComboBox IsEditable="True" Width="150" />
                                 </StackPanel>
-                                
+
                                 <!--スレッドツリー-->
                                 <Grid Grid.Row="1">
                                     <TreeView x:Name="boardTree"
@@ -282,12 +281,7 @@
                         </TabViewItem>
                     </TabView>
                 </StackPanel>
-                <controls:GridSplitter HorizontalAlignment="Left" Grid.Column="1" Width="16" Background="Transparent">
-                    <controls:GridSplitter.RenderTransform>
-                        <TranslateTransform X="-8"/>
-                    </controls:GridSplitter.RenderTransform>
-                </controls:GridSplitter>
-                <Grid Grid.Column="1" Margin="4" BorderBrush="LightGray" BorderThickness="2">
+                <Grid Grid.Column="1" Margin="2" BorderBrush="LightGray" BorderThickness="1">
                     <TabView TabWidthMode="SizeToContent" IsAddTabButtonVisible="False" HorizontalAlignment="Stretch">
                         <TabViewItem Header="ニュー速VIP" IsClosable="False">
                             <controls:DataGrid x:Name="threadDataGrid"
@@ -326,14 +320,17 @@
                         </TabViewItem>
                     </TabView>
                 </Grid>
-                <controls:GridSplitter HorizontalAlignment="Left" Grid.Column="2" Background="Transparent">
+                <controls:GridSplitter HorizontalAlignment="Left" Grid.Column="1" Background="Transparent" Margin="2">
                     <controls:GridSplitter.RenderTransform>
-                        <TranslateTransform X="-8"/>
+                        <TransformGroup>
+                            <TranslateTransform X="-15"/>
+                            <ScaleTransform ScaleX="0.3"/>
+                        </TransformGroup>
                     </controls:GridSplitter.RenderTransform>
                 </controls:GridSplitter>
-                
+
                 <!--スレッド及び書き込みゾーン-->
-                <Grid Grid.Column="2" Margin="4" BorderBrush="LightGray" BorderThickness="2">
+                <Grid Grid.Column="2" Margin="2" BorderBrush="LightGray" BorderThickness="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -347,7 +344,9 @@
                     </TabView>
 
                     <StackPanel Grid.Row="1">
-                        <TextBlock Text="WinUIでJane作って見たったｗ"/>
+                        <Border BorderBrush="#FFEEEEEE" BorderThickness="0,0,0,1" Padding="8,5">
+                            <TextBlock Text="WinUIでJane作って見たったｗ"/>
+                        </Border>
                         <Grid>
                             <StackPanel Orientation="Horizontal">
                                 <ToggleSplitButton>
@@ -401,7 +400,7 @@
                                     </RichTextBlock>
                                 </Grid>
                             </DataTemplate>
-                        </ListView.ItemTemplate>                        
+                        </ListView.ItemTemplate>
                     </ListView>
                     <Expander Grid.Row="3"
                               IsExpanded="True"
@@ -429,7 +428,7 @@
                                     <ComboBox Grid.Column="1" IsEditable="True" MinWidth="200"/>
                                     <TextBlock Grid.Column="2" Text="メール" VerticalAlignment="Center"/>
                                     <ComboBox Grid.Column="3" IsEditable="True" MinWidth="200"/>
-                                    <CheckBox Grid.Column="4" Content="sage"/>                  
+                                    <CheckBox Grid.Column="4" Content="sage"/>
                                     <Button Grid.Column="5" Content="書き込み" HorizontalAlignment="Right"/>
                                 </Grid>
                                 <Grid Grid.Row="1" HorizontalAlignment="Stretch">
@@ -439,6 +438,14 @@
                         </Expander.Content>
                     </Expander>
                 </Grid>
+                <controls:GridSplitter HorizontalAlignment="Left" Grid.Column="2" Background="Transparent" Margin="2">
+                    <controls:GridSplitter.RenderTransform>
+                        <TransformGroup>
+                            <TranslateTransform X="-15"/>
+                            <ScaleTransform ScaleX="0.3"/>
+                        </TransformGroup>
+                    </controls:GridSplitter.RenderTransform>
+                </controls:GridSplitter>
             </Grid>
         </Grid>
     </Page>
