@@ -19,7 +19,7 @@
             <vm:MainViewModel/>
         </Page.DataContext>
 
-        <Grid>
+        <Grid Margin="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
@@ -150,25 +150,25 @@
                 </MenuBar>
                 <StackPanel Orientation="Horizontal">
                     <CommandBar x:Name="ToolBar" HorizontalAlignment="Left">
-                        <AppBarToggleButton Icon="Globe" Label="オフライン"/>
+                        <AppBarToggleButton Icon="Globe" Label="オフライン" Width="40" Margin="0,0,10,0"/>
                         <AppBarSeparator/>
-                        <AppBarToggleButton Icon="AlignRight" Label="縦⇔横分割切替"/>
-                        <AppBarToggleButton Icon="ClosePane" Label="2⇔3ペイン切替"/>
-                        <AppBarToggleButton Icon="List" Label="板ツリー表示"/>
-                        <AppBarToggleButton Icon="DockRight" Label="右側切替"/>
+                        <AppBarToggleButton Icon="AlignRight" Label="縦⇔横分割切替" Width="40" Margin="0,0,10,0"/>
+                        <AppBarToggleButton Icon="ClosePane" Label="2⇔3ペイン切替" Width="40" Margin="0,0,10,0"/>
+                        <AppBarToggleButton Icon="List" Label="板ツリー表示" Width="40" Margin="0,0,10,0"/>
+                        <AppBarToggleButton Icon="DockRight" Label="右側切替" Width="40" Margin="0,0,10,0"/>
                         <AppBarSeparator/>
-                        <AppBarButton Icon="Edit" Label="スレッド新規作成"/>
-                        <AppBarButton Icon="Refresh" Label="更新/全てのタブの更新"/>
-                        <AppBarButton Icon="Favorite" Label="お気に入りの更新チェック"/>
+                        <AppBarButton Icon="Edit" Label="スレッド新規作成" Width="40" Margin="0,0,10,0"/>
+                        <AppBarButton Icon="Refresh" Label="更新/全てのタブの更新" Width="40" Margin="0,0,10,0"/>
+                        <AppBarButton Icon="Favorite" Label="お気に入りの更新チェック" Width="40" Margin="0,0,10,0"/>
                         <AppBarSeparator/>
-                        <AppBarButton Icon="Zoom" Label="スレの絞り込み/絞り込み結果のクリア"/>
-                        <AppBarButton Icon="ZoomIn" Label="ログから検索"/>
+                        <AppBarButton Icon="Zoom" Label="スレの絞り込み/絞り込み結果のクリア" Width="40" Margin="0,0,10,0"/>
+                        <AppBarButton Icon="ZoomIn" Label="ログから検索" Width="40" Margin="0,0,10,0"/>
                         <AppBarSeparator/>
-                        <AppBarButton Icon="Setting" Label="設定/ビューア設定"/>
-                        <AppBarButton Icon="Help" Label="ヘルプ"/>
+                        <AppBarButton Icon="Setting" Label="設定/ビューア設定" Width="40" Margin="0,0,10,0"/>
+                        <AppBarButton Icon="Help" Label="ヘルプ" Width="40" Margin="0,0,10,0"/>
                     </CommandBar>
                     <StackPanel Orientation="Horizontal">
-                        <TextBox Text="https://mi.5ch.net/news4vip/" Height="25"/>
+                        <TextBox Text="https://mi.5ch.net/news4vip/" Height="25" Width="250" Margin="10,0,0,0"/>
                         <Button Content="→"/>
                     </StackPanel>
                 </StackPanel>
@@ -180,56 +180,57 @@
                     <ColumnDefinition Width="500"/>
                     <ColumnDefinition x:Name="memo"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Margin="4" BorderBrush="LightGray" BorderThickness="2">
-                    <Grid>
-                        <TextBlock Text="板一覧"/>
+                <Grid Grid.Column="0" Margin="2" BorderBrush="LightGray" BorderThickness="1" RowDefinitions="Auto,*">
+                    <Grid Grid.Row="0">
+                        <Border Margin="8,5">
+                            <TextBlock Text="板一覧"/>
+                        </Border>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Content="▼" HorizontalAlignment="Right" FontSize="10"/>
                             <Button Content="📌" HorizontalAlignment="Right" FontSize="10"/>
                             <Button Content="✕" HorizontalAlignment="Right" FontSize="10" />
                         </StackPanel>
                     </Grid>
-                    <TabView TabWidthMode="SizeToContent" IsAddTabButtonVisible="False">
+                    <TabView Grid.Row="1" TabWidthMode="SizeToContent" IsAddTabButtonVisible="False">
                         <TabViewItem Header="板一覧" IsClosable="False">
-                            <Grid RowDefinitions ="30, 800"><!--2grid目高さをGridに合わせて指定できるように-->
-                                <StackPanel Orientation="Horizontal">
-                                    <ToggleSplitButton>
-                                        <SymbolIcon Symbol="Zoom"/>
-                                        <ToggleSplitButton.Flyout>
-                                            <MenuFlyout>
-                                                <RadioMenuFlyoutItem Text="通常検索"/>
-                                                <RadioMenuFlyoutItem Text="Migemo検索"/>
-                                                <RadioMenuFlyoutItem Text="正規表現"/>
-                                                <MenuFlyoutSeparator/>
-                                                <ToggleMenuFlyoutItem Text="インクリメンタル"/>
-                                                <ToggleMenuFlyoutItem Text="マルチワード"/>
-                                                <ToggleMenuFlyoutItem Text="全半角一致"/>
-                                            </MenuFlyout>
-                                        </ToggleSplitButton.Flyout>
-                                    </ToggleSplitButton>
-                                    <ComboBox IsEditable="True" Width="150" />
-                                </StackPanel>
-                                
-                                <!--スレッドツリー-->
-                                <Grid Grid.Row="1">
-                                    <TreeView x:Name="boardTree"
+                            <Grid RowDefinitions="Auto,*">
+                                <Border BorderBrush="#FFEEEEEE" BorderThickness="0,0,0,1" Padding="8,5">
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                        <ToggleSplitButton>
+                                            <SymbolIcon Symbol="Zoom"/>
+                                            <ToggleSplitButton.Flyout>
+                                                <MenuFlyout>
+                                                    <RadioMenuFlyoutItem Text="通常検索"/>
+                                                    <RadioMenuFlyoutItem Text="Migemo検索"/>
+                                                    <RadioMenuFlyoutItem Text="正規表現"/>
+                                                    <MenuFlyoutSeparator/>
+                                                    <ToggleMenuFlyoutItem Text="インクリメンタル"/>
+                                                    <ToggleMenuFlyoutItem Text="マルチワード"/>
+                                                    <ToggleMenuFlyoutItem Text="全半角一致"/>
+                                                </MenuFlyout>
+                                            </ToggleSplitButton.Flyout>
+                                        </ToggleSplitButton>
+                                        <ComboBox IsEditable="True" Width="150" Margin="2,0,0,0"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!--板ツリー-->
+                                <TreeView Grid.Row="1" x:Name="boardTree"
                                               ItemsSource="{Binding BoardSource}"
                                               SelectionMode="Single">
-                                        <i:Interaction.Behaviors>
-                                            <icore:EventTriggerBehavior EventName="ItemInvoked" 
+                                    <i:Interaction.Behaviors>
+                                        <icore:EventTriggerBehavior EventName="ItemInvoked" 
                                                                         SourceObject="{Binding ElementName=boardTree}">
-                                                <icore:InvokeCommandAction Command="{Binding SelectBoardCommand}"/>
-                                            </icore:EventTriggerBehavior>
-                                        </i:Interaction.Behaviors>
-                                        <TreeView.ItemTemplate>
-                                            <DataTemplate x:DataType="model:BoardList">
-                                                <TreeViewItem ItemsSource="{Binding Children}"
+                                            <icore:InvokeCommandAction Command="{Binding SelectBoardCommand}"/>
+                                        </icore:EventTriggerBehavior>
+                                    </i:Interaction.Behaviors>
+                                    <TreeView.ItemTemplate>
+                                        <DataTemplate x:DataType="model:BoardList">
+                                            <TreeViewItem ItemsSource="{Binding Children}"
                                                               Content="{Binding BoardTitle}"/>
-                                            </DataTemplate>
-                                        </TreeView.ItemTemplate>
-
-                                    </TreeView>
-                                </Grid>
+                                        </DataTemplate>
+                                    </TreeView.ItemTemplate>
+                                </TreeView>
                             </Grid>
                         </TabViewItem>
                         <TabViewItem Header="お気に入り" IsClosable="False">
@@ -281,13 +282,8 @@
                             </StackPanel>
                         </TabViewItem>
                     </TabView>
-                </StackPanel>
-                <controls:GridSplitter HorizontalAlignment="Left" Grid.Column="1" Width="16" Background="Transparent">
-                    <controls:GridSplitter.RenderTransform>
-                        <TranslateTransform X="-8"/>
-                    </controls:GridSplitter.RenderTransform>
-                </controls:GridSplitter>
-                <Grid Grid.Column="1" Margin="4" BorderBrush="LightGray" BorderThickness="2">
+                </Grid>
+                <Grid Grid.Column="1" Margin="2" BorderBrush="LightGray" BorderThickness="1">
                     <TabView TabWidthMode="SizeToContent" IsAddTabButtonVisible="False" HorizontalAlignment="Stretch">
                         <TabViewItem Header="ニュー速VIP" IsClosable="False">
                             <controls:DataGrid x:Name="threadDataGrid"
@@ -326,14 +322,17 @@
                         </TabViewItem>
                     </TabView>
                 </Grid>
-                <controls:GridSplitter HorizontalAlignment="Left" Grid.Column="2" Background="Transparent">
+                <controls:GridSplitter HorizontalAlignment="Left" Grid.Column="1" Background="Transparent" Margin="2">
                     <controls:GridSplitter.RenderTransform>
-                        <TranslateTransform X="-8"/>
+                        <TransformGroup>
+                            <TranslateTransform X="-15"/>
+                            <ScaleTransform ScaleX="0.3"/>
+                        </TransformGroup>
                     </controls:GridSplitter.RenderTransform>
                 </controls:GridSplitter>
-                
+
                 <!--スレッド及び書き込みゾーン-->
-                <Grid Grid.Column="2" Margin="4" BorderBrush="LightGray" BorderThickness="2">
+                <Grid Grid.Column="2" Margin="2" BorderBrush="LightGray" BorderThickness="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -347,33 +346,38 @@
                     </TabView>
 
                     <StackPanel Grid.Row="1">
-                        <TextBlock Text="WinUIでJane作って見たったｗ"/>
-                        <Grid>
-                            <StackPanel Orientation="Horizontal">
-                                <ToggleSplitButton>
-                                    <SymbolIcon Symbol="Zoom"/>
-                                    <ToggleSplitButton.Flyout>
-                                        <MenuFlyout>
-                                            <RadioMenuFlyoutItem Text="通常検索"/>
-                                            <RadioMenuFlyoutItem Text="Migemo検索"/>
-                                            <RadioMenuFlyoutItem Text="正規表現"/>
-                                            <MenuFlyoutSeparator/>
-                                            <ToggleMenuFlyoutItem Text="インクリメンタル"/>
-                                            <ToggleMenuFlyoutItem Text="マルチワード"/>
-                                            <ToggleMenuFlyoutItem Text="全半角一致"/>
-                                        </MenuFlyout>
-                                    </ToggleSplitButton.Flyout>
-                                </ToggleSplitButton>
-                                <ComboBox IsEditable="True" VerticalAlignment="Center"/>
-                            </StackPanel>
-                            <CommandBar HorizontalAlignment="Right">
-                                <AppBarButton Icon="Account"/>
-                                <AppBarButton Icon="Refresh"/>
-                                <AppBarButton Icon="Edit"/>
-                                <AppBarButton Icon="Favorite"/>
-                                <AppBarButton Icon="Cancel"/>
-                            </CommandBar>
-                        </Grid>
+                        <Border BorderBrush="#FFEEEEEE" BorderThickness="0,0,0,1" Padding="8,5">
+                            <TextBlock Text="WinUIでJane作って見たったｗ"/>
+                        </Border>
+
+                        <Border BorderBrush="#FFEEEEEE" BorderThickness="0,0,0,1" Padding="8,0">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal">
+                                    <ToggleSplitButton Margin="5,0,0,0">
+                                        <SymbolIcon Symbol="Zoom"/>
+                                        <ToggleSplitButton.Flyout>
+                                            <MenuFlyout>
+                                                <RadioMenuFlyoutItem Text="通常検索"/>
+                                                <RadioMenuFlyoutItem Text="Migemo検索"/>
+                                                <RadioMenuFlyoutItem Text="正規表現"/>
+                                                <MenuFlyoutSeparator/>
+                                                <ToggleMenuFlyoutItem Text="インクリメンタル"/>
+                                                <ToggleMenuFlyoutItem Text="マルチワード"/>
+                                                <ToggleMenuFlyoutItem Text="全半角一致"/>
+                                            </MenuFlyout>
+                                        </ToggleSplitButton.Flyout>
+                                    </ToggleSplitButton>
+                                    <ComboBox IsEditable="True" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                </StackPanel>
+                                <CommandBar HorizontalAlignment="Right">
+                                    <AppBarButton Icon="Account"/>
+                                    <AppBarButton Icon="Refresh"/>
+                                    <AppBarButton Icon="Edit"/>
+                                    <AppBarButton Icon="Favorite"/>
+                                    <AppBarButton Icon="Cancel"/>
+                                </CommandBar>
+                            </Grid>
+                        </Border>
                     </StackPanel>
                     <!--スレッドビュー-->
                     <ListView Grid.Row="2"
@@ -386,22 +390,22 @@
                                         <RowDefinition Height="30"/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <StackPanel Grid.Row="0" Orientation="Horizontal" Padding="8,0">
-                                        <Button Content="{Binding No}" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal" Padding="-15,0,0,0">
+                                        <HyperlinkButton Content="{Binding No}" VerticalAlignment="Center"/>
                                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
                                         <TextBlock Text="{Binding Date}" VerticalAlignment="Center"/>
-                                        <Button Content="{Binding ID}" VerticalAlignment="Center"/>
+                                        <HyperlinkButton Content="{Binding ID}" VerticalAlignment="Center"/>
                                         <TextBlock Text="{Binding Options}" VerticalAlignment="Center"/>
                                     </StackPanel>
-                                    <RichTextBlock Grid.Row="1">
+                                    <RichTextBlock Grid.Row="1" Margin="20,0,0,22">
                                         <Paragraph Foreground="Black">
-                                            <Run FontSize="21"
+                                            <Run FontSize="17"
                                                  Text="{Binding Message}"/>
                                         </Paragraph>
                                     </RichTextBlock>
                                 </Grid>
                             </DataTemplate>
-                        </ListView.ItemTemplate>                        
+                        </ListView.ItemTemplate>
                     </ListView>
                     <Expander Grid.Row="3"
                               IsExpanded="True"
@@ -411,7 +415,7 @@
                               HorizontalContentAlignment="Stretch"
                               Header="書き込み">
                         <Expander.Content>
-                            <Grid Height="200" HorizontalAlignment="Stretch">
+                            <Grid Height="120" HorizontalAlignment="Stretch">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
@@ -429,7 +433,7 @@
                                     <ComboBox Grid.Column="1" IsEditable="True" MinWidth="200"/>
                                     <TextBlock Grid.Column="2" Text="メール" VerticalAlignment="Center"/>
                                     <ComboBox Grid.Column="3" IsEditable="True" MinWidth="200"/>
-                                    <CheckBox Grid.Column="4" Content="sage"/>                  
+                                    <CheckBox Grid.Column="4" Content="sage"/>
                                     <Button Grid.Column="5" Content="書き込み" HorizontalAlignment="Right"/>
                                 </Grid>
                                 <Grid Grid.Row="1" HorizontalAlignment="Stretch">
@@ -439,6 +443,14 @@
                         </Expander.Content>
                     </Expander>
                 </Grid>
+                <controls:GridSplitter HorizontalAlignment="Left" Grid.Column="2" Background="Transparent" Margin="2">
+                    <controls:GridSplitter.RenderTransform>
+                        <TransformGroup>
+                            <TranslateTransform X="-15"/>
+                            <ScaleTransform ScaleX="0.3"/>
+                        </TransformGroup>
+                    </controls:GridSplitter.RenderTransform>
+                </controls:GridSplitter>
             </Grid>
         </Grid>
     </Page>
