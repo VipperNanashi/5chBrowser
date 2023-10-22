@@ -29,8 +29,8 @@ namespace _5chBrowser.ViewModels
             Task.Run(async () =>
             {
                 await Load();
-                if (BoardSource.Count == 0)
-                    GetBoardList();
+                //if (BoardSource.Count == 0)
+                await GetBoardList();
             });
         }
         private async Task Load()
@@ -50,7 +50,7 @@ namespace _5chBrowser.ViewModels
             state.ResList = ResSource;
             await service.Save(state);
         }
-        private async void GetBoardList()
+        private async Task GetBoardList()
         {
             GetBoardService getBoardService = new GetBoardService();
             BoardSource = await getBoardService.GetBoard();
@@ -62,6 +62,9 @@ namespace _5chBrowser.ViewModels
         {
             var node = args.InvokedItem as BoardList;
             if (node == null)
+            { return; }
+
+            if (node.BoardURL == null)
             { return; }
 
             GetThreadService getThreadService = new GetThreadService();

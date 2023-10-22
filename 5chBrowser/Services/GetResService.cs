@@ -34,7 +34,7 @@ namespace _5chBrowser.Services
             var socketHandler = new SocketsHttpHandler()
             {
                 Proxy = new WebProxy(Properties.Settings.Default.ReadProxy, false),
-                UseProxy = true,
+                UseProxy = false,
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli,
                 ConnectCallback = async (context, cancellationToken) =>
                 {
